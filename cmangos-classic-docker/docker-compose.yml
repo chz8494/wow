@@ -1,0 +1,48 @@
+version: '2'
+services:
+  server:
+    image: lacsap/cmangos-classic
+    #build: .
+    container_name: cmangos-classic-server
+    ports:
+      - "8085:8085"
+      - "3724:3724"
+    depends_on:
+      - db
+    links:
+      - db:db
+    volumes:
+      - /docker_data/cmangos-classic:/home/mangos/run/etc/
+    environment:
+      MYSQL_ROOT_PASSWORD: 123sqwert!
+
+  db:
+    image: mysql
+    container_name: cmangos-classic-db
+    ports:
+      - "3306:3306"
+    volumes:
+      - /docker_data/cmangos-classic-db:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 123sqwert!
+
+  register:
+    image: lacsap/cmangos-web-register
+    #build: ../web_register/
+    container_name: cmangos-classic-register
+    ports:
+      - "8080:80"
+    links:
+      - db:db
+    volumes:
+      - /docker_data/cmangos-web-register:/var/www/html
+
+  dbadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: cmangos-classic-phpadmin
+    ports:
+      - "8888:80"
+    links:
+      - db:db
+    environment:
+      MYSQL_ROOT_PASSWORD: 123sqwert!
